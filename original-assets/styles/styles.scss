@@ -1,0 +1,320 @@
+$colors: (
+  background: #fff,
+  background-dark: #000,
+  primary: #000,
+  primary-dark: #fff
+);
+
+@mixin color($property, $varName) {
+  #{$property}: map-get($colors, $varName);
+  #{$property}: var(--#{$varName}, map-get($colors, $varName));
+}
+
+@mixin color-border($property, $val1, $val2, $varName) {
+  #{$property}: #{$val1} #{$val2} map-get($colors, $varName);
+  #{$property}: #{$val1} #{$val2} var(--#{$varName}, map-get($colors, $varName));
+}
+
+@mixin lightmode {
+  --background: #{map-get($colors, background)};
+  --primary: #{map-get($colors, primary)};
+  color: #000;
+}
+
+@mixin darkmode {
+  --background: #{map-get($colors, background-dark)};
+  --primary: #{map-get($colors, primary-dark)};
+  color: #fff;
+}
+
+.sans-serif {
+  font-family: sans-serif;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+html {
+  @include lightmode;
+  @media (prefers-color-scheme: dark) {
+    @include darkmode;
+  }
+  scrollbar-color: var(--primary) transparent;
+}
+
+body {
+  @extend .sans-serif;
+  @include color(background, background);
+  @include color(color, primary);
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 700px;
+  padding: 10px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  
+  * {
+    max-width: 100%;
+  }
+}
+
+a, hr {
+  @include color(color, primary);
+}
+
+*::selection {
+  @include color(color, background);
+  @include color(background, primary);
+}
+
+header {
+  @extend .border-bottom;
+  padding: 10px 0;
+
+  * {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+h1 a, h2 a {
+  text-decoration: none;
+}
+
+img, audio {
+  @extend .fw;
+}
+
+button, input, textarea, select {
+  @include color-border(border, 1px, solid, primary);
+  border-radius: 0;
+  @include color(background, background);
+  @include color(color, primary);
+  @extend .sans-serif;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  outline: none;
+
+  &:focus {
+    @include color-border(outline, 3px, solid, primary);
+  }
+}
+
+.button {
+  @extend button;
+}
+
+// Disable this because it causes CSS to break in Firefox ESR (check again in the future)
+// input[type=file]::file-selector-button, input[type=file]::-webkit-file-upload-button {
+// @extend .button;
+// }
+
+form {
+  input, textarea, select {
+    margin-bottom: 5px;
+  }
+  textarea {
+    display: block;
+  }
+}
+
+form.fw {
+  @extend .fw;
+
+  input:not([type]), input[type="submit"], input[type="button"], input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="file"], textarea, select {
+    @extend .fw;
+  }
+}
+
+blockquote {
+  @include color-border(border-left, 5px, solid, primary);
+  padding-left: 20px;
+  margin-left: 0;
+}
+
+pre {
+  padding: 10px;
+  @include color-border(border, 1px, solid, primary);
+  white-space: pre-wrap;
+}
+
+mark, :not(pre) > code {
+  font-size: 1rem;
+  @extend .invert;
+}
+
+/* Initial values for Chroma */
+.c-chroma {
+  background: #fff;
+  color: #000;
+}
+
+code {
+  font-family: monospace;
+}
+
+table {
+  @extend .p;
+  border-collapse: collapse;
+  border-spacing: 0;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+tr, td, th {
+  @include color-border(border, 1px, solid, primary);
+  padding: 5px;
+}
+
+footer {
+  @extend .border-top;
+  padding: 10px 0;
+
+  * {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+details summary {
+  // Show first child of summary inline
+  > *:first-child {
+    display: inline;
+  }
+}
+
+.border-top {
+  @include color-border(border-top, 1px, solid, primary);
+}
+
+.border-bottom {
+  @include color-border(border-bottom, 1px, solid, primary);
+}
+
+.p {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.hide {
+  display: none;
+}
+
+.in {
+  display: inline;
+}
+
+.fw {
+  width: 100%;
+}
+
+.ct {
+  text-align: center;
+}
+
+.h400p {
+  height: 400px;
+}
+
+.captchaimg {
+  background-color: #fff;
+}
+
+.tal {
+  text-align: left;
+}
+
+.tar {
+  text-align: right;
+}
+
+.turn-around {
+  transform: rotate(180deg);
+}
+
+.egg-anim {
+  transition: transform 2s ease;
+}
+
+.invert {
+  @include color(color, background);
+  @include color(background, primary);
+  &::selection {
+    @include color(color, primary);
+    @include color(background, background);
+  }
+}
+
+.preview {
+  padding: 10px;
+  @include color-border(border, 1px, solid, primary);
+  margin-bottom: 5px;
+}
+
+.actions {
+  @extend .p;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  * {
+    text-align: center;
+  }
+}
+
+#map {
+  height: 400px;
+
+  * {
+    max-width: unset;
+  }
+}
+
+#announcement {
+  @extend .invert;
+	padding: 5px;
+	text-align: center;
+  * {
+    @extend .invert;
+  }
+}
+
+#reactions button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+// Print
+@media print {
+  html {
+    @include lightmode;
+  }
+
+  body {
+    font-family: serif;
+    max-width: inherit;
+  }
+
+  nav,
+  .actions,
+  #tts,
+  #interactions,
+  #tor,
+  #announcement {
+    display: none;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  // Show link
+  .e-content a[href]:after {
+    content: " [" attr(href) "]";
+  }
+}

@@ -1,0 +1,282 @@
+# This is an example configuration for GoBlog
+# Until there's an official release configuration may change
+# Keep a look at the commit history
+
+# Debug
+debug: true # Enable more verbose logging
+
+# Pprof - Option to enable pprof profiling
+pprof:
+  enabled: true # Enable pprof profiling
+  address: ":6060" # Address to listen on
+
+# Database
+database:
+  file: data/db.sqlite # File for the SQLite database
+  dumpFile: data/db.sql # (Optional) File for database dump, will be executed hourly
+  debug: true # Enable if you want to see all the SQL statements
+
+# Web server
+server:
+  # Logging
+  logging: true # Log website access (time, path, status code, response size, referrer, user agent, but NO IP address)
+  logFile: data/access.log # File path for the access log (rotated, date will get appended)
+  # Addresses
+  port: 8080
+  publicAddress: https://example.com # Public address to use for the blog
+  shortPublicAddress: https://short.example.com # Optional short address, will redirect to main address
+  mediaAddress: https://media.example.com # Optional domain to use for serving media files
+  # Security
+  publicHttps: true # Use Let's Encrypt and serve site with HTTPS
+  # To use another ACME server like ZeroSSL, set the following
+  # acmeDir: https://acme.zerossl.com/v2/DV90
+  # acmeEabKid: "kid" # Key ID for the EAB key
+  # acmeEabKey: "key" # Key for the EAB key
+  httpsCert: /path/to/cert.crt # Path to TLS certificate
+  httpsKey: /path/to/key.key # Path to TLS key
+  httpsRedirect: true # Listen on port 80 and redirect to HTTPS on port 443, when HTTPS is configured and no custom port set, automatically enabled with publicHttps
+  securityHeaders: true # Set security HTTP headers, automatically enabled with publicHttps or httpsCert and httpsKey
+  cspDomains: # Specify additional domains to allow embedded content with enabled securityHeaders
+  - media.example.com
+  # Tor
+  tor: true # Publish onion service, requires Tor to be installed and available in path
+  torSingleHop: true # Enable single hop mode (non-anonymous)
+
+# Cache
+cache:
+  enable: true # Enable cache on some paths
+  expiration: 600 # Time in seconds for cache TTL
+
+# Private mode
+privateMode:
+  enabled: true # Enable private mode and only allow access with login
+
+# IndexNow (https://www.indexnow.org/index)
+indexNow:
+  enabled: true # Enable IndexNow integration
+
+# User
+user:
+  name: John Doe # Full name (only for inital, you can change this in the settings UI)
+  nick: johndoe # Username (only for inital, you can change this in the settings UI)
+  password: changeThisWeakPassword # Password for login
+  totp: HHUCH2SBOFXKKVCRJPVRS3W5MHX4FHXP # Optional for Two Factor Authentication; generate with "./GoBlog totp-secret"
+  appPasswords: # Optional passwords you can use with Basic Authentication
+    - username: app1
+      password: abcdef
+  link: https://example.net # Optional user link to use instead of homepage
+  email: contact@example.com # Email (only used in feeds)
+  identities: # Other identities to add to the HTML header with rel=me links
+    - https://micro.blog/exampleuser
+
+# Hooks
+hooks:
+  shell: /bin/bash # Shell to use to execute commands (default is /bin/bash)
+  hourly: # Commands to execute every full hour
+  - echo Hourly
+  prestart: # Commands to execute when starting
+  - echo Start
+  # Post hooks (you can use .URL (URL string) or .Post (post object) as text/template objects)
+  postpost: # Commands to execute after creating a new post
+  - echo Created new post at {{.URL}}
+  postupdate: # Commands to execute after updating a post
+  - echo Updated post at {{.URL}}
+  postdelete: # Commands to execute after deleting a post
+  - echo Deleted post at {{.URL}}
+  postundelete: # Commands to execute after undeleting a post
+  - echo Undeleted post at {{.URL}}
+
+# ActivityPub
+activityPub:
+  enabled: true # Enable ActivityPub
+  tagsTaxonomies: # Post taxonomies to use as "Hashtags"
+    - tags
+
+# Webmention
+webmention:
+  disableSending: true # Disable sending of webmentions (also happens when private mode enabled and external target)
+  disableReceiving: true # Disable receiving of webmentions, disables comments for all blogs, disables replies via ActivityPub
+
+# MicroPub
+micropub:
+  # Media configuration
+  mediaStorage:
+    mediaUrl: https://media.example.com # Define external media URL (instead of /m subpath for local files), required for BunnyCDN and FTP
+    # BunnyCDN storage (optional)
+    bunnyStorageKey: BUNNY-STORAGE-KEY # Secret key for BunnyCDN storage
+    bunnyStorageName: storagename # BunnyCDN storage name
+    bunnyStorageRegion: ny # required if BunnyCDN storage region isn't Falkenstein
+    # FTP storage (optional)
+    ftpAddress: ftp.example.com:21 # Host and port for FTP connection
+    ftpUser: ftpuser # Username of FTP user
+    ftpPassword: ftppassword # Password of FTP user
+    # Image compression (optional, you can define no, one or multiple services, disabled when private mode enabled)
+    tinifyKey: TINIFY-KEY # Secret key for the Tinify.com API
+    cloudflareCompressionEnabled: true # Use Cloudflare's compression
+    localCompressionEnabled: true # Use local compression
+  # MicroPub parameters (defaults already set, set to overwrite)
+  # You can set parameters via the UI of your MicroPub editor or via front matter in the content
+  categoryParam: tags
+  replyParam: replylink
+  replyTitleParam: replytitle
+  replyContextParam: replycontext
+  likeParam: likelink
+  likeTitleParam: liketitle
+  likeContextParam: likecontext
+  bookmarkParam: link
+  audioParam: audio
+  photoParam: images
+  photoDescriptionParam: imagealts
+  locationParam: location
+
+# Notifications
+notifications:
+  ntfy: # Receive notifications using Ntfy.sh
+    enabled: true # Enable it
+    topic: mynotificationstopic # The topic for the notifications
+    server: https://ntfy.sh # The server to use (default is https://ntfy.sh)
+    user: myusername # The username to use (optional)
+    pass: mypassword # The password to use (optional)
+    email: notifications@example.com # Email address for Ntfy Email Notifications (optional)
+  telegram: # Receive notifications via Telegram
+    enabled: true # Enable it
+    chatId: 123456 # Telegram chat ID (usually the user id on Telegram)
+    botToken: BOT-TOKEN # Telegram bot token
+  matrix: # Receive notifications via Matrix
+    enabled: true # Enable it
+    homeserver: https://matrix.org # The bot's homeserver
+    username: username # The bot's username
+    password: pass123 # The bot's password
+    room: "#myroom:matrix.org" # The Matrix chat room for the notifications
+    deviceid: TestBlogNotifications # A unique device ID (to not clutter your login sessions) (optional)
+
+# Redirects
+pathRedirects:
+  # Simple 302 redirect from /index.xml to .rss
+  - from: "\\/index\\.xml"
+    to: ".rss"
+  # Redirect using regular expressions
+  - from: "^\\/(writings|dev)\\/posts(.*)$"
+    to: "/$1$2"
+    type: 301 # custom redirect type
+
+# Map tiles
+mapTiles:
+  source: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" # (Optional) URL to use for map tiles
+  attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors" # (Optional) Attribution for map tiles
+  minZoom: 0 # (Optional) Minimum zoom level
+  maxZoom: 20 # (Optional) Maximum zoom level
+
+# Text-to-Speech (not just using the browser API, but Google Cloud's TTS-API)
+# If enabled, it will automatically generate a TTS audio file after publishing a public post that has a section as well
+# It's possible to regenerate the audio at any time. That will also try and delete previously generated TTS audio files
+tts:
+  enabled: true
+  googleApiKey: "xxxxxxxx"
+
+# Reactions (see docs for more info)
+reactions:
+  enabled: true # Enable reactions (default is false)
+
+# Block bots using the robots.txt
+robotstxt:
+  blockedBots: # List all bots that should be disallowed to crawl the site (default is empty)
+    - GPTBot
+
+# Blogs
+defaultBlog: en # Default blog (needed because you can define multiple blogs)
+blogs:
+  en: # Blog code
+    path: / # Path of blog
+    lang: en # Language of blog
+    title: My awesome blog # Blog title
+    description: My awesome blog description # Blog description
+    pagination: 10 # Number of posts per page
+    # Taxonomies
+    taxonomies:
+      - name: tags # Code of taxonomy (used via post parameters)
+        title: Tags # Name
+        description: "**Tags** on this blog" # Description
+    # Menus
+    menus:
+      # Main menu
+      main:
+        items:
+          - title: Home # Title
+            link: / # Site-relative or absolute links
+          - title: Posts
+            link: /posts
+          - title: Contact
+            link: https://example.com/contact
+      # Footer menu
+      footer:
+        items:
+          - title: Imprint & Privacy Policy
+            link: https://example.com/legal
+    # Index page which shows all posts with photos
+    photos:
+      enabled: true # Enable
+      path: /photos # (Optional) Set a custom path (relative to blog path)
+      title: Photos # Title
+      description: Instead of using Instagram, I prefer uploading pictures to my blog. # Description
+    # Full text search
+    search:
+      enabled: true # Enable
+      title: Search # Title
+      path: /search # (Optional) Set a custom path (relative to blog path)
+      placeholder: Search on this blog # Description
+    # Page with blog statistics (posts per year)
+    blogStats:
+      enabled: true # Enable
+      path: /statistics # (Optional) Set a custom path (relative to blog path)
+      title: Statistics # Title
+      description: "Here are some statistics with the number of posts per year:" # Description
+    # Blogroll
+    blogroll:
+      enabled: true # Enable
+      path: /blogroll # (Optional) Set a custom path (relative to blog path)
+      title: Blogroll # Title
+      description: "I follow these blog:" # Description
+      opml: https://example.com/blogroll.opml # Required, URL to the OPML file
+      authHeader: X-Auth # Optional, header to use for OPML authentication
+      authValue: abc # Authentication value for OPML
+      categories: # Optional, allow only these categories
+        - Blogs
+    # Redirect to random post
+    randomPost:
+      enabled: true # Enable
+      path: /random # Path
+    # Redirect to archive of the current day in previous years
+    onThisDay:
+      enabled: true # Enable
+      path: /onthisday # Path
+    # Send notifications about new posts to Telegram channel
+    telegram:
+      enabled: true # Enable
+      chatId: "@telegram" # Chat ID, usually channel username
+      botToken: BOT-TOKEN # Telegram Bot Token
+      instantViewHash: INSTANT-VIEW-HASH # Use custom TG IV template
+    # Comments
+    comments:
+      enabled: true # Enable comments
+    # Map
+    map:
+      enabled: true # Enable the map feature (shows a map with all post locations)
+      path: /map # (Optional) Set a custom path (relative to blog path), default is /map
+    # Contact form
+    contact:
+      enabled: true # Enable a contact form
+      path: /contact # (Optional) Set a custom path (relative to blog path), default is /contact
+      title: "Contact me!" # (Optional) Title to show above the form
+      description: "Feel free to send me a message" # (Optional) Description to show above the form, supports markdown
+      privacyPolicy: "By submitting this form, I agree to the privacy policy." # (Optional) Require agreement to the privacy policy, supports markdown
+      smtpHost: smtp.example.com # SMTP host
+      smtpPort: 587 # (Optional) SMTP port, default is 587
+      smtpUser: mail@example.com # SMTP user
+      smtpPassword: secret # SMTP password
+      emailFrom: blog@example.com # Email sender
+      emailTo: mail@example.com # Email recipient
+      emailSubject: "New contact message" # (Optional) Email subject
+    # Announcement
+    announcement:
+      text: This is an **announcement**! # Can be markdown with links etc.
