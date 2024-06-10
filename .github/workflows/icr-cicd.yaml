@@ -1,0 +1,31 @@
+name: Trigger iCR
+
+on:
+  push:
+    branches: [ '**' ]
+    paths-ignore: [ "result/**" ]
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4  # Use the latest version
+
+    - name: Pull icr image
+      run: |
+        docker pull openrefactory/icr-go-engine:4.2.0
+
+    - name: Run static analysis tool with environment variable
+      run: |
+        docker run --rm \
+            --env LICENSE_KEY=H8LW-V566-APNJ-TFOR \
+            --mount type=bind,source=${{ github.workspace }},target=/workspace/source \
+            --mount type=bind,source=${{ github.workspace }}/result,target=/workspace/result \
+            openrefactory/icr-go-engine:4.2.0
+
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Pushed analysis results from workflow run ${{ github.sha }}"
+        branch: ${{ github.ref }}
+        file_pattern: ${{ github.workspace }}/result/*
