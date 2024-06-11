@@ -1,0 +1,15 @@
+--- /workspace/source/utils.go
++++ /workspace/source/utils.go
+@@ -412,6 +412,12 @@
+ 		return locale
+ 	}
+ 	timeDiffLocaleMutex.RUnlock()
++	// OpenRefactory Warning:
++	// Possible forgotten unlock of mutex!
++	//
++	//	File: utils.go, Line: 415
++	//		timeDiffLocaleMutex.Lock()
++	//		In function matchTimeDiffLocale, mutex timeDiffLocaleMutex is acquired, but no matching unlock is found.
+ 	timeDiffLocaleMutex.Lock()
+ 	defer timeDiffLocaleMutex.Unlock()
+ 	supportedLangs := []string{"en", "de", "es", "hi", "pt", "ru", "zh-CN"}

@@ -1,0 +1,17 @@
+--- /workspace/source/hooks.go
++++ /workspace/source/hooks.go
+@@ -137,6 +137,14 @@
+ 				ticker.Stop()
+ 				log.Println("Stopped hourly hooks")
+ 			})
++			// OpenRefactory Warning:
++			// Possible blocking channel operation!
++			//
++			// In goroutine #1:
++			//	File: hooks.go, Line: 140
++			//		for range ticker.C {
++			//		In function goBlog:startHourlyHooks$2, there is a range operation.
++			//		But no matching close operation is found on that channel from any other goroutine.
+ 			for range ticker.C {
+ 				for _, f := range a.hourlyHooks {
+ 					go f()
