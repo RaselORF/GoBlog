@@ -52,7 +52,7 @@ func (a *goBlog) apQueueSendSigned(blogIri, to string, activity any) error {
 	if err != nil {
 		return err
 	}
-	buf := bufferpool.Get()
+	buf := bufferpool.Get() 
 	defer bufferpool.Put(buf)
 	if err := (&apRequest{
 		BlogIri:  blogIri,
