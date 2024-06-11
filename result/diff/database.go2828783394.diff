@@ -1,0 +1,29 @@
+--- /workspace/source/database.go
++++ /workspace/source/database.go
+@@ -87,6 +87,26 @@
+ 		},
+ 	})
+ 	// Open db
++	// OpenRefactory Warning:
++	// Possible Hard Coded Password!
++	// The following code uses a hard coded string which may contain a password.
++	// Check that the string does not contain a password.
++	// Path:
++	//	File: config.go, Line: 569
++	//		return &config{
++	//		A tainted value is returned from the function call.
++	//	File: config.go, Line: 384
++	//		a.cfg = createDefaultConfig()
++	//		Variable 'a.cfg' is assigned a tainted value.
++	//	File: config.go, Line: 390
++	//		a.initDatabase(logging)
++	//		Tainted information is passed through the function call via 'a' to the receiver 'a' through the field 'File' (from type configDb)
++	//	File: database.go, Line: 41
++	//		a.openDatabase(a.cfg.Db.File, logging)
++	//		Tainted information is passed through the function call via 'a.cfg.Db.File' to the parameter 'file'
++	//	File: database.go, Line: 90
++	//		sql.Open(dbDriverName, file+"?mode=rwc&_journal=WAL&_timeout=100&cache=shared&_fk=1")
++	//		Tainted information is used in a sink.
+ 	db, err := sql.Open(dbDriverName, file+"?mode=rwc&_journal=WAL&_timeout=100&cache=shared&_fk=1")
+ 	if err != nil {
+ 		return nil, err

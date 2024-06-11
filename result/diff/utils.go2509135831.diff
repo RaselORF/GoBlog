@@ -1,0 +1,15 @@
+--- /workspace/source/utils.go
++++ /workspace/source/utils.go
+@@ -407,6 +407,12 @@
+ var timeDiffLocaleMutex sync.RWMutex
+ 
+ func matchTimeDiffLocale(lang string) tdl.Locale {
++	// OpenRefactory Warning:
++	// Possible forgotten unlock of mutex!
++	//
++	//	File: utils.go, Line: 410
++	//		timeDiffLocaleMutex.RLock()
++	//		In function matchTimeDiffLocale, mutex timeDiffLocaleMutex is acquired, but no matching unlock is found.
+ 	timeDiffLocaleMutex.RLock()
+ 	if locale, ok := timeDiffLocaleMap[lang]; ok {
+ 		return locale

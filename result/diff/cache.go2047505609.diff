@@ -1,0 +1,17 @@
+--- /workspace/source/cache.go
++++ /workspace/source/cache.go
+@@ -38,6 +38,14 @@
+ 	})
+ 	go func() {
+ 		ticker := time.NewTicker(15 * time.Minute)
++		// OpenRefactory Warning:
++		// Possible blocking channel operation!
++		//
++		// In goroutine #1:
++		//	File: cache.go, Line: 42
++		//		for range ticker.C {
++		//		In function goBlog:initCache$1, there is a range operation.
++		//		But no matching close operation is found on that channel from any other goroutine.
+ 		for range ticker.C {
+ 			met := a.cache.c.Metrics
+ 			log.Println("\nCache:", met.String())

@@ -1,0 +1,12 @@
+--- /workspace/source/main.go
++++ /workspace/source/main.go
+@@ -124,6 +124,9 @@
+ 			}
+ 			log.Println("Pprof server listening on", listener.Addr().String())
+ 			// Start server
++			// OpenRefactory Warning:
++			// No read or write timeout is set to server config
++			// which may cause server to wait indefinitely.
+ 			if err := pprofServer.Serve(listener); err != nil {
+ 				log.Fatalln("Failed to start pprof server:", err.Error())
+ 				return
