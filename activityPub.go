@@ -39,7 +39,7 @@ func (a *goBlog) initActivityPub() error {
 			a.apCheckMentions(p)
 			a.apCheckActivityPubReply(p)
 			a.apPost(p)
-		}
+		} 
 	})
 	a.pUpdateHooks = append(a.pUpdateHooks, func(p *post) {
 		if p.isPublishedSectionPost() && (p.Visibility == visibilityPublic || p.Visibility == visibilityUnlisted) {
