@@ -1,0 +1,334 @@
+{
+	"$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json",
+	"version": "2.1.0",
+	"runs": [
+		{
+			"results": [
+				{
+					"ruleId": "GoCST-2",
+					"message": {
+						"text": "In file: main.go, there is a function main that uses a server configuration which does not set any read, write or idle timeout. Server timeouts are necessary to expire inactive connections. Without the timeout, a server may wait indefinitely. iCR suggested that a properly configured server with a timeout should be used instead of the default one.",
+						"markdown": "In file: _main.go_, there is a function _main_ that uses a server configuration which does not set any read, write or idle timeout. Server timeouts are necessary to expire inactive connections. Without the timeout, a server may wait indefinitely. iCR suggested that a properly configured server with a timeout should be used instead of the default one."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 127,
+									"startColumn": 14,
+									"endLine": 127,
+									"endColumn": 41,
+									"snippet": {
+										"text": "pprofServer.Serve(listener)"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/main.go\n+++ /workspace/source/main.go\n@@ -124,6 +124,9 @@\n \t\t\t}\n \t\t\tlog.Println(\"Pprof server listening on\", listener.Addr().String())\n \t\t\t// Start server\n+\t\t\t// OpenRefactory Warning:\n+\t\t\t// No read or write timeout is set to server config\n+\t\t\t// which may cause server to wait indefinitely.\n \t\t\tif err := pprofServer.Serve(listener); err != nil {\n \t\t\t\tlog.Fatalln(\"Failed to start pprof server:\", err.Error())\n \t\t\t\treturn\n"
+					}
+				},
+				{
+					"ruleId": "GoFT-12",
+					"message": {
+						"text": "In file: database.go, there is a function call that uses a password. The password is hard-coded in the source code. iCR identified the usage point and suggested that the credential should not be hard-coded. For more information, read CWE-259.",
+						"markdown": "In file: _database.go_, there is a function call that uses a password. The password is hard-coded in the source code. iCR identified the usage point and suggested that the credential should not be hard-coded. For more information, read [CWE-259](https://cwe.mitre.org/data/definitions/259.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "database.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 90,
+									"startColumn": 13,
+									"endLine": 90,
+									"endColumn": 98,
+									"snippet": {
+										"text": "sql.Open(dbDriverName, file+\"?mode=rwc\u0026_journal=WAL\u0026_timeout=100\u0026cache=shared\u0026_fk=1\")"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/database.go\n+++ /workspace/source/database.go\n@@ -87,6 +87,26 @@\n \t\t},\n \t})\n \t// Open db\n+\t// OpenRefactory Warning:\n+\t// Possible Hard Coded Password!\n+\t// The following code uses a hard coded string which may contain a password.\n+\t// Check that the string does not contain a password.\n+\t// Path:\n+\t//\tFile: config.go, Line: 569\n+\t//\t\treturn \u0026config{\n+\t//\t\tA tainted value is returned from the function call.\n+\t//\tFile: config.go, Line: 384\n+\t//\t\ta.cfg = createDefaultConfig()\n+\t//\t\tVariable 'a.cfg' is assigned a tainted value.\n+\t//\tFile: config.go, Line: 390\n+\t//\t\ta.initDatabase(logging)\n+\t//\t\tTainted information is passed through the function call via 'a' to the receiver 'a' through the field 'File' (from type configDb)\n+\t//\tFile: database.go, Line: 41\n+\t//\t\ta.openDatabase(a.cfg.Db.File, logging)\n+\t//\t\tTainted information is passed through the function call via 'a.cfg.Db.File' to the parameter 'file'\n+\t//\tFile: database.go, Line: 90\n+\t//\t\tsql.Open(dbDriverName, file+\"?mode=rwc\u0026_journal=WAL\u0026_timeout=100\u0026cache=shared\u0026_fk=1\")\n+\t//\t\tTainted information is used in a sink.\n \tdb, err := sql.Open(dbDriverName, file+\"?mode=rwc\u0026_journal=WAL\u0026_timeout=100\u0026cache=shared\u0026_fk=1\")\n \tif err != nil {\n \t\treturn nil, err\n"
+					}
+				},
+				{
+					"ruleId": "GoFDR-2",
+					"message": {
+						"text": "In file: hooks.go, there is a function startHourlyHooks which contains a send or a receive operation on a channel and there is no matching receive or send operation on that channel from another goroutine. The goroutine will be blocking on that channel operation. iCR identified the source of the possible blocking channel operation and suggested to avoid it.",
+						"markdown": "In file: _hooks.go_, there is a function _startHourlyHooks_ which contains a send or a receive operation on a channel and there is no matching receive or send operation on that channel from another goroutine. The goroutine will be blocking on that channel operation. iCR identified the source of the possible blocking channel operation and suggested to avoid it."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "hooks.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 140,
+									"startColumn": 4,
+									"endLine": 144,
+									"endColumn": 5,
+									"snippet": {
+										"text": "for range ticker.C {\n\tfor _, f := range a.hourlyHooks {\n\t\tgo f()\n\t}\n}"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/hooks.go\n+++ /workspace/source/hooks.go\n@@ -137,6 +137,14 @@\n \t\t\t\tticker.Stop()\n \t\t\t\tlog.Println(\"Stopped hourly hooks\")\n \t\t\t})\n+\t\t\t// OpenRefactory Warning:\n+\t\t\t// Possible blocking channel operation!\n+\t\t\t//\n+\t\t\t// In goroutine #1:\n+\t\t\t//\tFile: hooks.go, Line: 140\n+\t\t\t//\t\tfor range ticker.C {\n+\t\t\t//\t\tIn function goBlog:startHourlyHooks$2, there is a range operation.\n+\t\t\t//\t\tBut no matching close operation is found on that channel from any other goroutine.\n \t\t\tfor range ticker.C {\n \t\t\t\tfor _, f := range a.hourlyHooks {\n \t\t\t\t\tgo f()\n"
+					}
+				},
+				{
+					"ruleId": "GoFDR-2",
+					"message": {
+						"text": "In file: cache.go, there is a function initCache which contains a send or a receive operation on a channel and there is no matching receive or send operation on that channel from another goroutine. The goroutine will be blocking on that channel operation. iCR identified the source of the possible blocking channel operation and suggested to avoid it.",
+						"markdown": "In file: _cache.go_, there is a function _initCache_ which contains a send or a receive operation on a channel and there is no matching receive or send operation on that channel from another goroutine. The goroutine will be blocking on that channel operation. iCR identified the source of the possible blocking channel operation and suggested to avoid it."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "cache.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 42,
+									"startColumn": 3,
+									"endLine": 45,
+									"endColumn": 4,
+									"snippet": {
+										"text": "for range ticker.C {\n\tmet := a.cache.c.Metrics\n\tlog.Println(\"\\nCache:\", met.String())\n}"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/cache.go\n+++ /workspace/source/cache.go\n@@ -38,6 +38,14 @@\n \t})\n \tgo func() {\n \t\tticker := time.NewTicker(15 * time.Minute)\n+\t\t// OpenRefactory Warning:\n+\t\t// Possible blocking channel operation!\n+\t\t//\n+\t\t// In goroutine #1:\n+\t\t//\tFile: cache.go, Line: 42\n+\t\t//\t\tfor range ticker.C {\n+\t\t//\t\tIn function goBlog:initCache$1, there is a range operation.\n+\t\t//\t\tBut no matching close operation is found on that channel from any other goroutine.\n \t\tfor range ticker.C {\n \t\t\tmet := a.cache.c.Metrics\n \t\t\tlog.Println(\"\\nCache:\", met.String())\n"
+					}
+				},
+				{
+					"ruleId": "GoFDR-4",
+					"message": {
+						"text": "In file: utils.go, there is a function matchTimeDiffLocale which attempts to acquire a mutex that is already held. As the mutex is not reentrant, it would cause a deadlock. iCR identified the source of the possible double locking operation and suggested to avoid it. To learn more check CWE-764.",
+						"markdown": "In file: _utils.go_, there is a function _matchTimeDiffLocale_ which attempts to acquire a mutex that is already held. As the mutex is not reentrant, it would cause a deadlock. iCR identified the source of the possible double locking operation and suggested to avoid it. To learn more check [CWE-764](https://cwe.mitre.org/data/definitions/764.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "utils.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 415,
+									"startColumn": 2,
+									"endLine": 415,
+									"endColumn": 21,
+									"snippet": {
+										"text": "timeDiffLocaleMutex"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/utils.go\n+++ /workspace/source/utils.go\n@@ -412,6 +412,12 @@\n \t\treturn locale\n \t}\n \ttimeDiffLocaleMutex.RUnlock()\n+\t// OpenRefactory Warning:\n+\t// Possible forgotten unlock of mutex!\n+\t//\n+\t//\tFile: utils.go, Line: 415\n+\t//\t\ttimeDiffLocaleMutex.Lock()\n+\t//\t\tIn function matchTimeDiffLocale, mutex timeDiffLocaleMutex is acquired, but no matching unlock is found.\n \ttimeDiffLocaleMutex.Lock()\n \tdefer timeDiffLocaleMutex.Unlock()\n \tsupportedLangs := []string{\"en\", \"de\", \"es\", \"hi\", \"pt\", \"ru\", \"zh-CN\"}\n"
+					}
+				},
+				{
+					"ruleId": "GoFT-13",
+					"message": {
+						"text": "In file: webmentionAdmin.go, there is a function webmentionAdminAction that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check CWE-601.",
+						"markdown": "In file: _webmentionAdmin.go_, there is a function _webmentionAdminAction_ that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check [CWE-601](https://cwe.mitre.org/data/definitions/601.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "webmentionAdmin.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 140,
+									"startColumn": 2,
+									"endLine": 140,
+									"endColumn": 51,
+									"snippet": {
+										"text": "http.Redirect(w, r, redirectTo, http.StatusFound)"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/webmentionAdmin.go\n+++ /workspace/source/webmentionAdmin.go\n@@ -137,5 +137,14 @@\n \tif redirectTo == \"\" {\n \t\tredirectTo = \".\"\n \t}\n+\t// OpenRefactory Warning:\n+\t// Possible URL Redirection To Untrusted Site (Open Redirect)!\n+\t// Path:\n+\t//\tFile: webmentionAdmin.go, Line: 136\n+\t//\t\tredirectTo := r.FormValue(\"redir\")\n+\t//\t\tVariable 'redirectTo' is assigned a tainted value from an external source.\n+\t//\tFile: webmentionAdmin.go, Line: 140\n+\t//\t\thttp.Redirect(w, r, redirectTo, http.StatusFound)\n+\t//\t\tTainted information is used in a sink.\n \thttp.Redirect(w, r, redirectTo, http.StatusFound)\n }\n"
+					}
+				},
+				{
+					"ruleId": "GoFT-13",
+					"message": {
+						"text": "In file: editorFiles.go, there is a function serveEditorFilesView that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check CWE-601.",
+						"markdown": "In file: _editorFiles.go_, there is a function _serveEditorFilesView_ that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check [CWE-601](https://cwe.mitre.org/data/definitions/601.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "editorFiles.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 52,
+									"startColumn": 2,
+									"endLine": 52,
+									"endColumn": 70,
+									"snippet": {
+										"text": "http.Redirect(w, r, a.mediaFileLocation(filename), http.StatusFound)"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/editorFiles.go\n+++ /workspace/source/editorFiles.go\n@@ -49,6 +49,21 @@\n \t\ta.serveError(w, r, \"No file selected\", http.StatusBadRequest)\n \t\treturn\n \t}\n+\t// OpenRefactory Warning:\n+\t// Possible URL Redirection To Untrusted Site (Open Redirect)!\n+\t// Path:\n+\t//\tFile: editorFiles.go, Line: 47\n+\t//\t\tfilename := r.FormValue(\"filename\")\n+\t//\t\tVariable 'filename' is assigned a tainted value from an external source.\n+\t//\tFile: mediaStorage.go, Line: 142\n+\t//\t\treturn fmt.Sprintf(\"%s/%s\", l.mediaURL, name)\n+\t//\t\tA tainted value is returned from the function call.\n+\t//\tFile: mediaStorage.go, Line: 76\n+\t//\t\treturn a.mediaStorage.location(name)\n+\t//\t\tA tainted value is returned from the function call.\n+\t//\tFile: editorFiles.go, Line: 52\n+\t//\t\thttp.Redirect(w, r, a.mediaFileLocation(filename), http.StatusFound)\n+\t//\t\tTainted information is used in a sink.\n \thttp.Redirect(w, r, a.mediaFileLocation(filename), http.StatusFound)\n }\n \n"
+					}
+				},
+				{
+					"ruleId": "GoFT-13",
+					"message": {
+						"text": "In file: micropub.go, there is a function micropubDelete that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check CWE-601.",
+						"markdown": "In file: _micropub.go_, there is a function _micropubDelete_ that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check [CWE-601](https://cwe.mitre.org/data/definitions/601.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "micropub.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 476,
+									"startColumn": 2,
+									"endLine": 476,
+									"endColumn": 56,
+									"snippet": {
+										"text": "http.Redirect(w, r, uu.String(), http.StatusNoContent)"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/micropub.go\n+++ /workspace/source/micropub.go\n@@ -473,6 +473,21 @@\n \t\ta.serveError(w, r, err.Error(), http.StatusBadRequest)\n \t\treturn\n \t}\n+\t// OpenRefactory Warning:\n+\t// Possible URL Redirection To Untrusted Site (Open Redirect)!\n+\t// Path:\n+\t//\tFile: micropub.go, Line: 110\n+\t//\t\tr.Form.Get(\"url\")\n+\t//\t\tTainted information passed through a function call.\n+\t//\tFile: micropub.go, Line: 110\n+\t//\t\ta.micropubDelete(w, r, r.Form.Get(\"url\"))\n+\t//\t\tTainted information is passed through the function call via 'r.Form.Get(\"url\")' to the parameter 'u'\n+\t//\tFile: micropub.go, Line: 467\n+\t//\t\tuu, err := url.Parse(u)\n+\t//\t\tVariable 'uu' is assigned a tainted value which is passed through a function call.\n+\t//\tFile: micropub.go, Line: 476\n+\t//\t\thttp.Redirect(w, r, uu.String(), http.StatusNoContent)\n+\t//\t\tTainted information is passed through a function call and is used in a sink.\n \thttp.Redirect(w, r, uu.String(), http.StatusNoContent)\n }\n \n"
+					}
+				},
+				{
+					"ruleId": "GoFT-13",
+					"message": {
+						"text": "In file: micropub.go, there is a function micropubUndelete that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check CWE-601.",
+						"markdown": "In file: _micropub.go_, there is a function _micropubUndelete_ that performs an HTTP redirect operation based upon data that comes from an external source without proper validation. This may allow an attacker to redirect users to a malicious site and trick the user allowing the attacker to steal the user's credentials. iCR suggested proper sanitization to prevent this Open Redirection attack. To learn more check [CWE-601](https://cwe.mitre.org/data/definitions/601.html)."
+					},
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "micropub.go",
+									"uriBaseId": "%SRCROOT%"
+								},
+								"region": {
+									"startLine": 492,
+									"startColumn": 2,
+									"endLine": 492,
+									"endColumn": 56,
+									"snippet": {
+										"text": "http.Redirect(w, r, uu.String(), http.StatusNoContent)"
+									},
+									"sourceLanguage": "Go"
+								}
+							}
+						}
+					],
+					"properties": {
+						"diffContent": "--- /workspace/source/micropub.go\n+++ /workspace/source/micropub.go\n@@ -489,6 +489,21 @@\n \t\ta.serveError(w, r, err.Error(), http.StatusBadRequest)\n \t\treturn\n \t}\n+\t// OpenRefactory Warning:\n+\t// Possible URL Redirection To Untrusted Site (Open Redirect)!\n+\t// Path:\n+\t//\tFile: micropub.go, Line: 112\n+\t//\t\tr.Form.Get(\"url\")\n+\t//\t\tTainted information passed through a function call.\n+\t//\tFile: micropub.go, Line: 112\n+\t//\t\ta.micropubUndelete(w, r, r.Form.Get(\"url\"))\n+\t//\t\tTainted information is passed through the function call via 'r.Form.Get(\"url\")' to the parameter 'u'\n+\t//\tFile: micropub.go, Line: 483\n+\t//\t\tuu, err := url.Parse(u)\n+\t//\t\tVariable 'uu' is assigned a tainted value which is passed through a function call.\n+\t//\tFile: micropub.go, Line: 492\n+\t//\t\thttp.Redirect(w, r, uu.String(), http.StatusNoContent)\n+\t//\t\tTainted information is passed through a function call and is used in a sink.\n \thttp.Redirect(w, r, uu.String(), http.StatusNoContent)\n }\n \n"
+					}
+				}
+			],
+			"tool": {
+				"driver": {
+					"name": "icr-for-go",
+					"version": "4.2.0",
+					"informationUri": "https://openrefactory.com/",
+					"rules": [
+						{
+							"id": "GoCST-2",
+							"name": "UseServerTimeout",
+							"defaultConfiguration": {
+								"level": "warning"
+							}
+						},
+						{
+							"id": "GoFDR-2",
+							"name": "AvoidBlockingChannelOperation",
+							"defaultConfiguration": {
+								"level": "error"
+							}
+						},
+						{
+							"id": "GoFDR-4",
+							"name": "AvoidDoubleLockingOfMutex",
+							"defaultConfiguration": {
+								"level": "error"
+							}
+						},
+						{
+							"id": "GoFT-12",
+							"name": "FixHard-CodedPassword",
+							"defaultConfiguration": {
+								"level": "warning"
+							}
+						},
+						{
+							"id": "GoFT-13",
+							"name": "PreventUrlRedirection",
+							"defaultConfiguration": {
+								"level": "error"
+							}
+						}
+					]
+				}
+			},
+			"versionControlProvenance": [
+				{
+					"repositoryUri": "https://github.com/RaselORF/GoBlog",
+					"revisionId": "2d6d1169dc2e0be3cee6f67d5dfce6968bf1eed5",
+					"branch": "master",
+					"mappedTo": {
+						"uriBaseId": "%SRCROOT%"
+					}
+				}
+			]
+		}
+	]
+}

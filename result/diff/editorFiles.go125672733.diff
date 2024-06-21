@@ -1,0 +1,24 @@
+--- /workspace/source/editorFiles.go
++++ /workspace/source/editorFiles.go
+@@ -49,6 +49,21 @@
+ 		a.serveError(w, r, "No file selected", http.StatusBadRequest)
+ 		return
+ 	}
++	// OpenRefactory Warning:
++	// Possible URL Redirection To Untrusted Site (Open Redirect)!
++	// Path:
++	//	File: editorFiles.go, Line: 47
++	//		filename := r.FormValue("filename")
++	//		Variable 'filename' is assigned a tainted value from an external source.
++	//	File: mediaStorage.go, Line: 142
++	//		return fmt.Sprintf("%s/%s", l.mediaURL, name)
++	//		A tainted value is returned from the function call.
++	//	File: mediaStorage.go, Line: 76
++	//		return a.mediaStorage.location(name)
++	//		A tainted value is returned from the function call.
++	//	File: editorFiles.go, Line: 52
++	//		http.Redirect(w, r, a.mediaFileLocation(filename), http.StatusFound)
++	//		Tainted information is used in a sink.
+ 	http.Redirect(w, r, a.mediaFileLocation(filename), http.StatusFound)
+ }
+ 

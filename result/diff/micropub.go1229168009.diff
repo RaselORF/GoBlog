@@ -1,0 +1,24 @@
+--- /workspace/source/micropub.go
++++ /workspace/source/micropub.go
+@@ -473,6 +473,21 @@
+ 		a.serveError(w, r, err.Error(), http.StatusBadRequest)
+ 		return
+ 	}
++	// OpenRefactory Warning:
++	// Possible URL Redirection To Untrusted Site (Open Redirect)!
++	// Path:
++	//	File: micropub.go, Line: 110
++	//		r.Form.Get("url")
++	//		Tainted information passed through a function call.
++	//	File: micropub.go, Line: 110
++	//		a.micropubDelete(w, r, r.Form.Get("url"))
++	//		Tainted information is passed through the function call via 'r.Form.Get("url")' to the parameter 'u'
++	//	File: micropub.go, Line: 467
++	//		uu, err := url.Parse(u)
++	//		Variable 'uu' is assigned a tainted value which is passed through a function call.
++	//	File: micropub.go, Line: 476
++	//		http.Redirect(w, r, uu.String(), http.StatusNoContent)
++	//		Tainted information is passed through a function call and is used in a sink.
+ 	http.Redirect(w, r, uu.String(), http.StatusNoContent)
+ }
+ 
