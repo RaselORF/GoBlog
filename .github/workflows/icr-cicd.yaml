@@ -11,17 +11,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4  # Use the latest version
 
-    - name: Pull icr image
-      run: |
-        docker pull openrefactory/icr-go-engine:4.2.0
+    # - name: Pull icr image
+    #   run: |
+    #     docker pull openrefactory/icr-go-engine:4.2.0
 
-    - name: Run static analysis tool with environment variable
+    # - name: Run static analysis tool with environment variable
+    #   run: |
+    #     docker run --rm \
+    #         --env LICENSE_KEY=H8LW-V566-APNJ-TFOR \
+    #         --mount type=bind,source=${{ github.workspace }},target=/workspace/source \
+    #         --mount type=bind,source=${{ github.workspace }}/result,target=/workspace/result \
+    #         openrefactory/icr-go-engine:4.2.0
+    - name: Run icr engine
       run: |
-        docker run --rm \
-            --env LICENSE_KEY=H8LW-V566-APNJ-TFOR \
-            --mount type=bind,source=${{ github.workspace }},target=/workspace/source \
-            --mount type=bind,source=${{ github.workspace }}/result,target=/workspace/result \
-            openrefactory/icr-go-engine:4.2.0
+       ${{ github.workspace }}/script/icr-cli -source ${{ github.workspace }} -result ${{ github.workspace }}/result -language go -license H8LW-V566-APNJ-TFOR -short
+      shell: bash
 
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v5
